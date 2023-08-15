@@ -199,10 +199,6 @@ function HDXLib:DoImage(data)
         players[#players + 1] = v.Name
     end
     
-    if table.find(players, Players:GetNameFromUserIdAsync(data)) then -- plrname/userid check
-        id = HDXLib:GetPlayerHeadShot(data)
-    end
-    
     if type(data) == "string" then -- rbxassetid check
         if data:sub(1, 3):lower() == "rbx" then
             id = data:sub(4)
@@ -1331,8 +1327,10 @@ function HDXLib:CreateWindow(Settings)
         end
 
         if isfile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension) then
-            if readfile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension) == Settings.KeySettings.Key then
+        for _, MKey in ipairs(Settings.KeySettings.Key) do
+            if string.find(readfile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension), MKey) then
                 Passthrough = true
+                end
             end
         end
 
@@ -1446,7 +1444,8 @@ function HDXLib:CreateWindow(Settings)
                     Passthrough = true
                     if Settings.KeySettings.SaveKey then
                         if writefile then
-                            writefile(HDXFolder.."/Key System/"..Settings.KeySettings.FileName..ConfigurationExtension, tostring(Settings.KeySettings.Key))
+                            local keyToSave = Settings.KeySettings.Key[1]
+                            writefile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension, FoundKey)
                         end
                         HDXLib:Notify({Title = "Key System", Content = "The key for this script has been saved successfully"})
                     end
@@ -2007,7 +2006,7 @@ function HDXLib:CreateWindow(Settings)
             end
 
             Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-            --Paragraph.Content.Position = UDim2.new(0,465, 0,76)
+            Paragraph.Content.Position = UDim2.new(0,465, 0,76)
             Paragraph.Size = UDim2.new(0,465, 0, Paragraph.Content.TextBounds.Y + 40)
 
             Paragraph.BackgroundTransparency = 1
